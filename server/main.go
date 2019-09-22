@@ -66,3 +66,17 @@ func newHub() *hub{
 		broadcastChan:    make(chan Message),	  
 	}
 }
+
+// Listens to all the hub's channels
+func (h *hub) run(){
+	for {
+		select {
+		case conn := <-h.addClientChan:
+			h.addClient(conn)
+		case conn := <-h.removeClientChan:
+			h.removeClient(conn)
+		case m := <-h.broadcastChan:
+			h.broadcastMessage(m)
+		}
+	}
+}
