@@ -80,3 +80,22 @@ func (h *hub) run(){
 		}
 	}
 }
+
+func (h *hub) removeClient(conn *websocket.Conn){
+	delete(h.clients, conn.LocalAddr().String())
+}
+
+func (h *hub) addClient(conn *websocket.Conn) {
+	h.clients[conn.RemoteAddr().String()] = conn
+}
+   
+func (h *hub) broadcastMessage(m Message) {
+	for _, conn := range h.clients {
+		err := websocket.JSON.Send(conn, m)
+		if err != nil {
+			fmt.Println("Error broadcasting message: ", err)
+			return
+		} // if
+	} // for
+} // broadcastMessage
+   
