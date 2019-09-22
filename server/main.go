@@ -47,7 +47,7 @@ func handler(ws *websocket.Conn, h *hub){
 	// TODO: Improve error handling
 	for {
 		var m Message
-		err := websocket.JSON.Recieve(ws, &m)
+		err := websocket.JSON.Receive(ws, &m)
 		if err != nil {
 			h.broadcastChan <- Message{err.Error()}
 			h.removeClient(ws)
@@ -90,6 +90,7 @@ func (h *hub) addClient(conn *websocket.Conn) {
 }
    
 func (h *hub) broadcastMessage(m Message) {
+	// Calls JSON.Send for every client in the pool
 	for _, conn := range h.clients {
 		err := websocket.JSON.Send(conn, m)
 		if err != nil {
@@ -98,4 +99,8 @@ func (h *hub) broadcastMessage(m Message) {
 		} // if
 	} // for
 } // broadcastMessage
-   
+
+func main(){
+	flag.Parse()
+	log.Fatal(server(*port))
+}
